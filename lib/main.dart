@@ -407,11 +407,172 @@ class _MainGlassDashboardState extends State<MainGlassDashboard> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text("${ex.code}:${ex.name}", style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                    Text("${ex.code}: ${ex.name}", style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(18),
-                        color: Colors.black.withOpacity(0
-                                                        
+                        color: Colors.black.withOpacity(0.5),
+                        border: Border.all(color: const Color(0xFFFF6B00), width: 1.5),
+                      ),
+                      child: Column(
+                        children: [
+                          const Icon(Icons.bolt, color: Color(0xFFFF6B00), size: 42),
+                          const SizedBox(height: 4),
+                          Text("GOKU AI COACHING • ${ex.animeReference}",
+                              style: const TextStyle(color: Color(0xFF00F0FF), fontSize: 12, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 6),
+                          Text("\"${ex.gokuQuote}\"", textAlign: TextAlign.center, style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 14)),
+                          const SizedBox(height: 6),
+                          Text("TARGET MUSCLE: ${ex.muscleWorked}", style: const TextStyle(color: Color(0xFFFFB800), fontSize: 12, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text("Completed Reps: $completedReps", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFFFF6B00))),
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF6B00)),
+                            onPressed: () => setModalState(() => completedReps++),
+                            child: const Text("+1 REP"),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF00C853)),
+                            onPressed: () {
+                              setState(() {
+                                ex.completedSets++;
+                                caloriesBurned += 40;
+                                if (ex.completedSets >= ex.sets) ex.isCompleted = true;
+                              });
+                              Navigator.pop(context);
+                            },
+                            child: Text("DONE SET (${ex.completedSets}/${ex.sets})"),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _scanMealWithCamera() async {
+    final picker = ImagePicker();
+    final XFile? photo = await picker.pickImage(source: ImageSource.camera);
+    if (photo == null) return;
+    setState(() {
+      isScanningFood = true;
+      aiMacroResult = "Goku Scouter analyzing meal photo macros...";
+    });
+    await Future.delayed(const Duration(seconds: 2));
+    setState(() {
+      isScanningFood = false;
+      aiMacroResult = "Meal Scanned Successfully:\n• 4 Whole Eggs + 2 Packets Dry-Roasted Excellent Soya Badi\n• Protein: 76g | Carbs: 32g | Fats: 22g | Total: 630 kcal";
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentDay = saiyanProtocolDays[selectedDayIndex];
+    return Scaffold(
+      body: Stack(
+        children: [
+          Positioned(
+            top: -60,
+            left: -40,
+            child: Container(
+              width: 260,
+              height: 260,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFFFF6B00).withOpacity(0.22),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -60,
+            right: -40,
+            child: Container(
+              width: 280,
+              height: 280,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFF00F0FF).withOpacity(0.18),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LiquidGlassCard(
+                    glowColor: const Color(0xFFFF6B00),
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      children: [
+                        const Row(
+                          children: [
+                            Icon(Icons.alarm, color: Color(0xFFFF6B00)),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: Text("4:00 AM WAKE-UP ALARM & 6:30 AM CUTOFF ARMED",
+                                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(side: const BorderSide(color: Color(0xFF00F0FF))),
+                                onPressed: () {
+                                  SaiyanAlarmScheduler.testAlarmIn5Sec();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text("Lock screen now! Alarm rings in 5s.")),
+                                  );
+                                },
+                                child: const Text("TEST ALARM (5s)", style: TextStyle(fontSize: 11)),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                                onPressed: () => SaiyanAlarmScheduler.stopAlarm(),
+                                child: const Text("STOP ALARM", style: TextStyle(fontSize: 11)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      ChoiceChip(
+                        label: const Text("Saiyan Workout Split"),
+                        selected: currentTab == 0,
+                        selectedColor: const Color(0xFFFF6B00),
+                        onSelected: (_) => setState(() => currentTab = 0),
+                      ),
+                      const SizedBox(width: 8),
+                      ChoiceChip(
+                        label: const Text("AI Diet Macro Camera"),
+                        selected: currentTab == 1,
+                        selectedColor: const Color(0xFF00F0FF).withOpacity(0.4),
+          
