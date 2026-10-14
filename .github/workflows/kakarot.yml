@@ -18,8 +18,11 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Get Dependencies & Compile APK
+      - name: Create Flutter Project Structure & Build APK
         run: |
+          flutter create --org com.saiyan.protocol --project-name saiyan_protocol .
+          mkdir -p lib
+          # (Your main.dart is already in the repo, but flutter create checks it. Let's force pub add and build)
           flutter pub add image_picker http android_alarm_manager_plus audioplayers permission_handler shared_preferences
           flutter build apk --release --no-tree-shake-icons
 
@@ -28,3 +31,4 @@ jobs:
         with:
           name: Saiyan-Protocol-APK
           path: build/app/outputs/flutter-apk/app-release.apk
+          
