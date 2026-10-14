@@ -574,5 +574,5 @@ class _MainGlassDashboardState extends State<MainGlassDashboard> {
                       ChoiceChip(
                         label: const Text("AI Diet Macro Camera"),
                         selected: currentTab == 1,
-                        selectedColor: const Color(0xFF00F0FF).withOpacity(0.4),
-          
+                        selectedColor: const Color(0xFF00F0FF),
+                        onS
