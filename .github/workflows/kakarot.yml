@@ -1,0 +1,32 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Create Clean Flutter Project & Compile APK
+        run: |
+          flutter create --org com.saiyan.protocol --project-name saiyan_protocol .
+          flutter pub add image_picker http android_alarm_manager_plus audioplayers permission_handler shared_preferences
+          flutter build apk --release --no-tree-shake-icons
+
+      - name: Upload Ready APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Saiyan-Protocol-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
+          
